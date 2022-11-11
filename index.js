@@ -18,13 +18,13 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
   const UserCollection = client.db("avengersTravel").collection("services");
-  const ReviewCollection = client.db("NodeMongoCRUD").collection("rewiews");
+  const ReviewCollection = client.db("avengersTravel").collection("reviews");
 
   try {
     app.post('/service', async (req, res) => {
       const service = req.body
       console.log(service);
-      const result = await  ReviewCollection.insertOne(service)
+      const result = await   UserCollection.insertOne(service)
       res.send(result)
       console.log(result);
 
@@ -44,7 +44,7 @@ async function run() {
     app.post('/reviews', async (req, res) => {
       const review = req.body
       console.log(review);
-      const result = await UserCollection.insertOne(review)
+      const result = await ReviewCollection.insertOne(review)
       res.send(result)
       console.log(result);
 
@@ -55,6 +55,25 @@ async function run() {
       const service = await UserCollection.findOne(query)
       res.send(service)
 
+    })
+    app.get('/reviews', async (req, res) => {
+      const query = {}
+      const cursor = ReviewCollection.find(query)
+      const  reviews = await cursor.toArray()
+      res.send(reviews)
+    })
+    app.get('/user-review/:uid', async (req, res) => {
+      const id = req.params.uid
+      const query = { userId: id }
+      const userReview = await  ReviewCollection.find(query)
+      res.send(userReview)
+    })
+ 
+    app.get('/review/:sid', async (req, res) => {
+      const id = req.params.sid
+      const query = { service_id: id }
+      const service = await ReviewCollection.find(query)
+      res.send(service)
     })
 
   }
