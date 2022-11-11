@@ -1,5 +1,7 @@
 const express = require('express')
 const cors = require('cors')
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
 const port = process.env.PORT || 5000
 
 const app = express()
@@ -10,22 +12,48 @@ require('dotenv').config()
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ip0tsyu.mongodb.net/?retryWrites=true&w=majority`;
 
-console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  client.close();
-});
 
+async function run() {
+  const UserCollection = client.db("avengersTravel").collection("services");
+  try {
+    app.post('/service', async (req, res) => {
+      const service = req.body
+      console.log(service);
+      const result = await UserCollection.insertOne(service)
+      res.send(result)
+      console.log(result);
 
-app.get('/',(req, res)=>{
-    res.send('Avengers Travel Is Running')
+    })
+    app.get('/services', async(req, res)=>{
+      const query = {}
+      const cursor = UserCollection.find(query)
+      const services = await cursor.toArray()
+      res.send(services)
+  })
+
+  app.get('/service/:id', async(req, res)=>{
+    const id = req.params.id
+    const query = {_id: ObjectId(id)}
+    const service = await UserCollection.findOne(query)
+    res.send(service)
+
 })
 
-app.listen(port,()=>{
-    console.log('Avengers Travel Is Running ', port);
+  }
+  finally {
+
+  }
+}
+
+run().catch(err => console.error(err))
+
+app.get('/', (req, res) => {
+  res.send('Avengers Travel Is Running')
+})
+
+app.listen(port, () => {
+  console.log('Avengers Travel Is Running ', port);
 })
