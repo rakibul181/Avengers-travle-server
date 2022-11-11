@@ -62,18 +62,24 @@ async function run() {
       const  reviews = await cursor.toArray()
       res.send(reviews)
     })
-    app.get('/user-review/:uid', async (req, res) => {
-      const id = req.params.uid
-      const query = { userId: id }
-      const userReview = await  ReviewCollection.find(query)
+    app.get('/user-review/:id', async (req, res) => {
+      const id = req.params.id
+      const query = {userId:id}
+      const userReview = await  ReviewCollection.findOne(query)
       res.send(userReview)
     })
  
-    app.get('/review/:sid', async (req, res) => {
-      const id = req.params.sid
-      const query = { service_id: id }
-      const service = await ReviewCollection.find(query)
-      res.send(service)
+    app.get('/review/:id', async (req, res) => {
+      const id = req.params.id
+      const status = req.body.status
+      const query = {service_id:id}
+      const updatedDoc = {
+        $set:{
+            status: status
+        }
+    }
+      const serviceReview = await ReviewCollection.find(query,updatedDoc)
+      res.send(serviceReview)
     })
 
   }
