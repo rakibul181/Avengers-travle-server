@@ -24,7 +24,7 @@ async function run() {
     app.post('/service', async (req, res) => {
       const service = req.body
       console.log(service);
-      const result = await   UserCollection.insertOne(service)
+      const result = await UserCollection.insertOne(service)
       res.send(result)
       console.log(result);
 
@@ -59,32 +59,32 @@ async function run() {
     app.get('/reviews', async (req, res) => {
       const query = {}
       const cursor = ReviewCollection.find(query)
-      const  reviews = await cursor.toArray()
+      const reviews = await cursor.toArray()
       res.send(reviews)
     })
     app.get('/user-review/:id', async (req, res) => {
       const id = req.params.id
-      const query = {userId:id}
-      const userReview = await  ReviewCollection.findOne(query)
+      const query = { userId: id }
+      const userReview = await ReviewCollection.findOne(query)
       res.send(userReview)
     })
     app.delete('/review/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const result = await  ReviewCollection.deleteOne(query);
+      const result = await ReviewCollection.deleteOne(query);
       res.send(result);
-  })
- 
+    })
+
     app.get('/review/:id', async (req, res) => {
       const id = req.params.id
       const status = req.body.status
-      const query = {service_id:id}
+      const query = { service_id: id }
       const updatedDoc = {
-        $set:{
-            status: status
+        $set: {
+          status: status
         }
-    }
-      const serviceReview = await ReviewCollection.find(query,updatedDoc)
+      }
+      const serviceReview = await ReviewCollection.find(query, updatedDoc)
       res.send(serviceReview)
     })
 
